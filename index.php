@@ -43,7 +43,6 @@ if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
   $response = finalSearch($arrString,$translate,$searchArr);
 ?>
 <div class="container h-100">
-
 <table class="table mt-4">
   <thead>
     <tr>
