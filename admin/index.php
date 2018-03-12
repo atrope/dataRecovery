@@ -1,4 +1,4 @@
-<?php include "../functions.php";
+<?php include "adminFunctions.php";
 $active = "admin";
 include "../nav.php";
 $files = getFiles();

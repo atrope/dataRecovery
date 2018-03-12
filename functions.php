@@ -1,4 +1,14 @@
 <?php
+
+function getJSONWords(){
+  $str = file_get_contents(__DIR__ .'/json/words.json');
+  return json_decode($str, true);
+}
+function getJSONLines(){
+  $str = file_get_contents(__DIR__ .'/json/lines.json');
+  return json_decode($str, true);
+}
+
 function findWord($word){
   $files = getJSONWords();
   $response = ["type"=>"Word search","term"=>$word,"files"=>[]];
@@ -17,16 +27,7 @@ function findTerm($term){
   return $response;
 }
 
-function getFiles(){ return glob(__DIR__ ."/files/*"); }
-
-function getJSONLines(){
-  $str = file_get_contents(__DIR__ .'/json/lines.json');
-  return json_decode($str, true);
-}
-
-function filterFileName($v1,$v2){
-	return strcmp($v1['file'], $v2['file']);
-}
+function filterFileName($v1,$v2){ return strcmp($v1['file'], $v2['file']); }
 
 function doOper($termA,$termB,$oper){
   if (strcmp($oper, '&&') === 0 ) return intersect($termA,$termB);
@@ -34,8 +35,7 @@ function doOper($termA,$termB,$oper){
 }
 
 function search($term){
-    if (strpos($term, '"') === false) return findWord($term);
-    else return findTerm($term);
+    return (strpos($term, '"') === false)? findWord($term):findTerm($term);
 }
 
 function intersect($arrA,$arrB){
@@ -52,28 +52,6 @@ function union($arrA,$arrB){
   $response = ["type"=>"Union","term"=>$terms,"files"=>$merged];
   return $response;
 }
-
-function breakLines($file){
-  $str="";
-  foreach(file($file) as $line)
-    $str.=trim(preg_replace('/[^a-zA-Z0-9-\'_]/', ' ', strtolower($line)))." ";
-  return rtrim($str);
-}
-
-function breakWords($file){
-  foreach(file($file) as $line){
-  $line = trim(preg_replace('/[^a-zA-Z0-9-\'_]/', ' ', strtolower($line)));
-  $line = explode(" ",$line);
-  foreach ($line as $word) if($word) $tmparray[] = $word;
-  }
-  return  isset($tmparray)?array_count_values($tmparray):[];
-}
-
-function getJSONWords(){
-  $str = file_get_contents(__DIR__ .'/json/words.json');
-  return json_decode($str, true);
-}
-
 
 function getRand(){
   $seed = str_split('abcdefghijklmnopqrstuvwxyz'.'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
@@ -111,31 +89,21 @@ function processTerms($arrString,&$translate,&$searchArr){
       if (isset($translate[$val])) processTerms($translate[$val],$translate,$searchArr);
       else $searchArr[$val] = search($val);
 }
+function checkIfResult($first,&$translate,&$searchArr){
+  if (!isset($searchArr[$first]))
+    $searchArr[$first] = finalSearch($translate[$first],$translate,$searchArr);
+}
 function finalSearch($arrString,&$translate,&$searchArr){
   $first = array_shift($arrString); //Get first term
-  if (!isset($searchArr[$first])) $searchArr[$first] = finalSearch($translate[$first],$translate,$searchArr); //If it is a generated term and we dont have it searched, searchit
+  checkIfResult($first,$translate,$searchArr); //If it is a generated term and we dont have it searched, searchit
   if(!$arrString) return $searchArr[$first];//If itś a sole term
   while ($arrString){
     $oper = array_shift($arrString);
     $second = array_shift($arrString);
-    if (!isset($searchArr[$second]))
-      $searchArr[$second] = finalSearch($translate[$second],$translate,$searchArr);//If it is a generated term and we dont have it searched, searchit
-
-    if (isset($response)) $response = doOper($response,$searchArr[$second],$oper); //else we do OR/AND with what we already have
-    else $response = doOper($searchArr[$first],$searchArr[$second],$oper); //If it is the first round
+    checkIfResult($second,$translate,$searchArr);
+    $response = (isset($response)) ?
+    doOper($response,$searchArr[$second],$oper):
+    doOper($searchArr[$first],$searchArr[$second],$oper);
   }
   return $response;
-}
-
-function createJSON(){
-  foreach(getFiles() as $file){
-    $filesLines [$file] = breakLines($file);
-    $filesWords [$file] = breakWords($file);
- }
- $fp = fopen(__DIR__ .'/json/lines.json', 'w+');
- fwrite($fp, json_encode($filesLines));
- fclose($fp);
- $fp = fopen(__DIR__ .'/json/words.json', 'w+');
- fwrite($fp, json_encode($filesWords));
- fclose($fp);
 }

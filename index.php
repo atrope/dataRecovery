@@ -1,5 +1,6 @@
 <?php
 include "functions.php";
+include "admin/adminFunctions.php";
 $active = "index";
 include "nav.php";
 
@@ -38,7 +39,7 @@ if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
 <?php
 }else {
   ?>
-<div class="container-fluid h-100">
+<div class="container-fluid h-100 mt-4">
     <div class="row justify-content-center align-items-center h-100">
         <div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
             <form action="/search/index.php" method="post" class="text-center">
@@ -46,9 +47,12 @@ if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
                 <div class="form-group">
                   <input type="text" name="term" value="" placeholder="let || (be && jude)" class="p-3 w-100">
                 </div>
+
                 <div class="form-group">
                   <input type="submit"  class="btn-success btn p-3 w-100" value="Search">
                 </div>
+                <h6 class="text-right"> <?php echo count(getFiles());?> indexed files</h6>
+
             </form>
         </div>
     </div>

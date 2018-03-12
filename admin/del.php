@@ -1,4 +1,4 @@
-<?php include "../functions.php";
+<?php include "adminFunctions.php";
 
 $file = isset($_GET["file"])? urldecode($_GET["file"]):"";
 if ($file){
