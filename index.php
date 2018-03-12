@@ -13,7 +13,8 @@ if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
   processTerms($arrString,$translate,$searchArr);
   $response = finalSearch($arrString,$translate,$searchArr);
 ?>
-<div class="container h-100">
+<div class="container h-100 mt-4">
+  <h1 class="text-center"><?php echo $_REQUEST["term"];?></h1>
 <table class="table mt-4">
   <thead>
     <tr>

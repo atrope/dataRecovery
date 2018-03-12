@@ -93,13 +93,15 @@ function translate(&$string){
   }
   return $translate;
 }
-
 function makeArray($string){
+  $string = preg_replace('{\s+(?!([^"]*"[^"]*")*[^"]*$)}',"~~",$string);
   $string = str_replace("||"," || ",$string);
   $string = str_replace("&&"," && ",$string);
   $string = str_replace("!"," ! ",$string);
   $output = preg_replace('!\s+!', ' ', $string);
-  return explode(" ",trim($output));
+  $output  = explode(" ",trim($output));
+  foreach($output as &$value) $value =   $string = str_replace("~~"," ",$value);
+  return $output;
 }
 
 function processTerms($arrString,&$translate,&$searchArr){
@@ -110,17 +112,17 @@ function processTerms($arrString,&$translate,&$searchArr){
       else $searchArr[$val] = search($val);
 }
 function finalSearch($arrString,&$translate,&$searchArr){
-  $first = array_shift($arrString);
-  if (!isset($searchArr[$first])) $searchArr[$first] = finalSearch($translate[$first],$translate,$searchArr);
+  $first = array_shift($arrString); //Get first term
+  if (!isset($searchArr[$first])) $searchArr[$first] = finalSearch($translate[$first],$translate,$searchArr); //If it is a generated term and we dont have it searched, searchit
   if(!$arrString) return $searchArr[$first];//If itś a sole term
   while ($arrString){
     $oper = array_shift($arrString);
     $second = array_shift($arrString);
     if (!isset($searchArr[$second]))
-      $searchArr[$second] = finalSearch($translate[$second],$translate,$searchArr);
+      $searchArr[$second] = finalSearch($translate[$second],$translate,$searchArr);//If it is a generated term and we dont have it searched, searchit
 
-    if (isset($response)) $response = doOper($response,$searchArr[$second],$oper);
-    else $response = doOper($searchArr[$first],$searchArr[$second],$oper);
+    if (isset($response)) $response = doOper($response,$searchArr[$second],$oper); //else we do OR/AND with what we already have
+    else $response = doOper($searchArr[$first],$searchArr[$second],$oper); //If it is the first round
   }
   return $response;
 }

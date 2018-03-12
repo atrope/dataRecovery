@@ -5,7 +5,7 @@ $files = getFiles();
 
 ?>
 <div class="container mt-4">
-  <a class="btn btn-danger" href="/search/admin/reGenerate.php">REGENERATE DB</a>
+  <a class="btn btn-info" href="/search/admin/reGenerate.php">REGENERATE DB</a>
   <a class="btn btn-success" href="/search/admin/add.php">ADD</a>
   <div class="container-fluid h-100">
   <table class="table mt-4">
