@@ -1,4 +1,4 @@
-<?php 
+<?php
 $active = "admin";
 include "../nav.php";
 ?>
@@ -24,12 +24,12 @@ include "../nav.php";
   for($i=0; $i<$total; $i++) {
   $tmpFilePath = $_FILES['files']['tmp_name'][$i];
   if ($tmpFilePath != ""){
-    $newFilePath = __DIR__ ."/../files/" . $_FILES['files']['name'][$i];
+    $newFilePath = __DIR__ ."/../storage/" . $_FILES['files']['name'][$i];
     if(!move_uploaded_file($tmpFilePath, $newFilePath)) $waserror=true;
   }
 }
 if (isset($waserror)) echo "There was an error in your upload :(";
-else header("Location: reGenerate.php");
+else header("Location: index.php");
 }
 ?>
 </div>

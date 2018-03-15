@@ -1,6 +1,13 @@
 <?php
 
 function getFiles(){ return glob(__DIR__ ."/../files/*"); }
+function getStorageFiles(){
+  $indexed = getFiles();
+  foreach ($indexed as &$value) $value = str_replace("/files/","/storage/",$value);
+  $storage = glob(__DIR__ ."/../storage/*");
+  return  array_diff($storage, $indexed);
+
+}
 
 function cleanDB(){
   $files = glob(__DIR__ .'/../json/*');
@@ -24,7 +31,7 @@ function createJSON(){
  $fp = fopen(__DIR__ .'/../json/lines.json', 'w+');
  fwrite($fp, json_encode($filesLines));
  fclose($fp);
- 
+
  foreach ($filesWords as $key => $value) {
    $fp = fopen(__DIR__ .'/../json/'.$key.'.json', 'w+');
    fwrite($fp, json_encode($value));
