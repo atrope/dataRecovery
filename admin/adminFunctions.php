@@ -2,17 +2,34 @@
 
 function getFiles(){ return glob(__DIR__ ."/../files/*"); }
 
+function cleanDB(){
+  $files = glob(__DIR__ .'/../json/*');
+foreach($files as $file)
+  if(is_file($file))
+    unlink($file);
+
+}
 function createJSON(){
+  cleanDB();
   foreach(getFiles() as $file){
-    $filesLines [$file] = breakLines($file);
-    $filesWords [$file] = breakWords($file);
+    $tmp = explode("/",$file);
+    $nfile = $tmp[count($tmp)-1];
+    $filesLines [$nfile] = breakLines($file);
+    $words = breakWords($file);
+    foreach ($words as $key => $value) {
+      if (isset($filesWords[$key[0]][$key])) $filesWords[$key[0]][$key][] = ["file"=>$nfile,"times"=>$value];
+      else  $filesWords[$key[0]][$key] = [["file"=>$nfile,"times"=>$value]];
+    }
  }
  $fp = fopen(__DIR__ .'/../json/lines.json', 'w+');
  fwrite($fp, json_encode($filesLines));
  fclose($fp);
- $fp = fopen(__DIR__ .'/../json/words.json', 'w+');
- fwrite($fp, json_encode($filesWords));
- fclose($fp);
+ 
+ foreach ($filesWords as $key => $value) {
+   $fp = fopen(__DIR__ .'/../json/'.$key.'.json', 'w+');
+   fwrite($fp, json_encode($value));
+   fclose($fp);
+ }
 }
 function breakLines($file){
   $str="";

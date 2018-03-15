@@ -1,20 +1,38 @@
 <?php
 
-function getJSONWords(){
-  $str = file_get_contents(__DIR__ .'/json/words.json');
-  return json_decode($str, true);
+function findByWord($word,$hasNot=false){
+  $key = $word[0];
+  $retorno = [];
+  $path = __DIR__ ."/json/$key.json";
+  if (is_file($path)){
+    $str = file_get_contents($path);
+    $content = json_decode($str, true);
+    if (isset($content[$word]))
+      foreach ($content[$word] as $key => $value)
+        $retorno[] = ["file"=>$value["file"],"times"=>$value["times"]];
+  }
+  return $hasNot? invert($retorno) : $retorno;
 }
 function getJSONLines(){
   $str = file_get_contents(__DIR__ .'/json/lines.json');
   return json_decode($str, true);
 }
-
+function invert($files){
+  $found = [];
+  $return  = [];
+  foreach ($files as $key => $value) $found [] = $value["file"];
+  foreach (getFiles() as $value){
+    $check = explode("/",$value);
+    $check = $check[count($check)-1];
+    if (!in_array($check,$found)) $return[] = ["file"=>$check,"times"=>0];
+  }
+  return $return;
+}
 function findWord($word){
-  $files = getJSONWords();
   $response = ["type"=>"Word search","term"=>$word,"files"=>[]];
-  foreach ($files as $path=>$file)
-    if(isset($file[$word]))
-      $response["files"][] = ["file"=>$path, "times"=> $file[$word]];
+  $hasNot=($word[0]==="!");
+  $word = preg_replace('/!/', '', $word);
+  $response["files"] = findByWord($word,$hasNot);
   return $response;
 }
 function findTerm($term){
@@ -32,6 +50,7 @@ function filterFileName($v1,$v2){ return strcmp($v1['file'], $v2['file']); }
 function doOper($termA,$termB,$oper){
   if (strcmp($oper, '&&') === 0 ) return intersect($termA,$termB);
   else if (strcmp($oper, '||') === 0 ) return  union($termA,$termB);
+  else if (strcmp($oper, '!') === 0 ) return  invert($termA);
 }
 
 function search($term){
@@ -62,6 +81,7 @@ function getRand(){
 }
 
 function translate(&$string){
+  $operators =["||","&&"];
   $translate = [];
   while(strpos($string, "(")!=false) {
     preg_match('/\(([^)]+)\)/', $string, $match);
@@ -71,14 +91,17 @@ function translate(&$string){
   }
   return $translate;
 }
-function makeArray($string){
+function normalizeString($string){
   $string = preg_replace('{\s+(?!([^"]*"[^"]*")*[^"]*$)}',"~~",$string);
+  $string = preg_replace('/\s+/', '', $string);
+  $string = preg_replace('%\s+%', ' ', $string);
   $string = str_replace("||"," || ",$string);
   $string = str_replace("&&"," && ",$string);
-  $string = str_replace("!"," ! ",$string);
-  $output = preg_replace('!\s+!', ' ', $string);
-  $output  = explode(" ",trim($output));
-  foreach($output as &$value) $value =   $string = str_replace("~~"," ",$value);
+  return  trim(strtolower($string));
+}
+function makeArray($string){
+  $output  = explode(" ",$string);
+  foreach($output as &$value) $value = str_replace("~~"," ",$value);
   return $output;
 }
 

@@ -7,7 +7,7 @@ include "nav.php";
 //$string = "A || (B && F && G) && (D || E)";
 //$string = "let || (be && jude)";
 if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
-  $search = strtolower($_REQUEST["term"]);
+  $search = normalizeString($_REQUEST["term"]);
   $searchArr = [];
   $translate = translate($search);
   $arrString = makeArray($search);
@@ -24,15 +24,12 @@ if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
     </tr>
   </thead>
   <tbody>
-  <?php foreach ($response["files"] as $value) {
-
-    ?>
+  <?php foreach ($response["files"] as $value) { ?>
     <tr>
-      <td><?php $tmp = explode("/",$value["file"]); echo $tmp[count($tmp)-1];?></td>
-      <td> <a href="/search/files/<?php echo $tmp[count($tmp)-1];?>" class="btn btn-warning">Click Here</a> </td>
+      <td><?php echo $value["file"]; ?></td>
+      <td> <a href='<?php echo "./files/".$value["file"];?>' class="btn btn-warning">Click Here</a> </td>
     </tr>
   <?php } ?>
-
     </tbody>
 </table>
 </div>
