@@ -27,7 +27,7 @@ if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
   <?php foreach ($response["files"] as $value) { ?>
     <tr>
       <td><?php echo $value["file"]; ?></td>
-      <td> <a href='<?php echo "./files/".$value["file"];?>' class="btn btn-warning">Click Here</a> </td>
+      <td> <a href='<?php echo "./files/".$value["file"];?>' class="btn btn-warning" download>Click Here</a> </td>
     </tr>
   <?php } ?>
     </tbody>

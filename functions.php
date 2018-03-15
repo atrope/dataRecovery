@@ -83,7 +83,7 @@ function getRand(){
 function translate(&$string){
   $operators =["||","&&"];
   $translate = [];
-  while(strpos($string, "(")!=false) {
+  while(strpos($string, "(")!==false) {
     preg_match('/\(([^)]+)\)/', $string, $match);
     $repl = getRand();
     $string = str_replace($match[0],$repl,$string);
@@ -107,14 +107,25 @@ function makeArray($string){
 
 function processTerms($arrString,&$translate,&$searchArr){
   $operators =["||","&&"];
-  foreach ($arrString as $val)
-    if(!in_array($val,$operators))
-      if (isset($translate[$val])) processTerms($translate[$val],$translate,$searchArr);
-      else $searchArr[$val] = search($val);
+  foreach ($arrString as $word){
+    $noNot= preg_replace('/!/', '', $word);
+    if(!in_array($word,$operators)){
+      if (isset($translate[$word])) processTerms($translate[$word],$translate,$searchArr);
+      else if (isset($translate[$noNot])) processTerms($translate[$noNot],$translate,$searchArr);
+      else $searchArr[$word] = search($word);
+    }
+  }
 }
 function checkIfResult($first,&$translate,&$searchArr){
-  if (!isset($searchArr[$first]))
-    $searchArr[$first] = finalSearch($translate[$first],$translate,$searchArr);
+  if (!isset($searchArr[$first])){
+    $hasNot=($first[0]==="!");
+    $word = preg_replace('/!/', '', $first);
+    $searchArr[$word] = finalSearch($translate[$word],$translate,$searchArr);
+    if ($hasNot){
+      $searchArr[$first] = $searchArr[$word];
+      $searchArr[$first]["files"] = invert($searchArr[$first]["files"]);
+    }
+  }
 }
 function finalSearch($arrString,&$translate,&$searchArr){
   $first = array_shift($arrString); //Get first term
