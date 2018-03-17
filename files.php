@@ -26,7 +26,7 @@ if ($file){
   }
   ?>
 </div>
-<div class="col-6 text-center">
+<div class="col-6 text-center d-print-none">
   <iframe src="https://www.youtube.com/embed?listType=search&list=<?php echo preg_replace('/[^A-Za-z \-]/', '', $term);?>" width="80%" height="300"></iframe>
 </div>  </div>
 
