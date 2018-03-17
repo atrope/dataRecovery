@@ -43,7 +43,7 @@ if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
             <form action="/search/index.php" method="post" class="text-center">
               <h1> SEARCH FOR IT!</h1>
                 <div class="form-group">
-                  <input type="text" name="term" value="" placeholder="let || (be && jude)" class="p-3 w-100">
+                  <input type="text" name="term" value="" placeholder="blue || (friends && jude)" class="p-3 w-100">
                 </div>
 
                 <div class="form-group">
