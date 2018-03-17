@@ -27,7 +27,7 @@ if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
   <tbody>
   <?php foreach ($response["files"] as $value) { ?>
     <tr>
-      <td><?php echo $value["file"]; ?></td>
+      <td><?php echo ucfirst(str_replace("-"," ",str_replace(".txt","",$value["file"])));?></td>
       <td> <a href='files.php?file=<?php echo urlencode($value["file"])."&term=".urlencode($term);?>' class="btn btn-warning">Click Here</a> </td>
     </tr>
   <?php } ?>
