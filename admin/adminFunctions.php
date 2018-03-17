@@ -45,11 +45,13 @@ function breakLines($file){
   return rtrim($str);
 }
 
+
 function breakWords($file){
+  $stopList=['a', '"', ';', '.', 'the', 'an', '!', '*', 'it', 'at', 'i', 'in', 'that', 'as', 'on','and', 'to',"i","a", "about", "an", "are", "as", "at", "be", "by", "com", "for", "from","how","in", "is", "it", "of", "on", "or", "that","the", "this","to", "was", "what", "when","where","who", "will", "with","the","www"];
   foreach(file($file) as $line){
   $line = trim(preg_replace('/[^a-zA-Z0-9-\'_]/', ' ', strtolower($line)));
   $line = explode(" ",$line);
-  foreach ($line as $word) if($word) $tmparray[] = $word;
+  foreach ($line as $word) if($word && !in_array($word,$stopList)) $tmparray[] = $word;
   }
   return  isset($tmparray)?array_count_values($tmparray):[];
 }

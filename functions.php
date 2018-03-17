@@ -99,6 +99,11 @@ function normalizeString($string){
   $string = str_replace("&&"," && ",$string);
   return  trim(strtolower($string));
 }
+function cleanString($string){
+  $string = preg_replace('/[^A-Za-z \-]/', '', $string);
+  $string = preg_replace('%\s+%', ' ', $string);
+  return  array_filter(array_map('trim',explode(" ",strtolower($string))),'strlen');
+}
 function makeArray($string){
   $output  = explode(" ",$string);
   foreach($output as &$value) $value = str_replace("~~"," ",$value);

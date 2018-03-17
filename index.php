@@ -7,7 +7,8 @@ include "nav.php";
 //$string = "A || (B && F && G) && (D || E)";
 //$string = "let || (be && jude)";
 if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
-  $search = normalizeString($_REQUEST["term"]);
+  $term = $_REQUEST["term"];
+  $search = normalizeString($term);
   $searchArr = [];
   $translate = translate($search);
   $arrString = makeArray($search);
@@ -15,19 +16,19 @@ if (isset($_REQUEST["term"]) && $_REQUEST["term"]!=""){
   $response = finalSearch($arrString,$translate,$searchArr);
 ?>
 <div class="container h-100 mt-4">
-  <h1 class="text-center"><?php echo $_REQUEST["term"];?></h1>
+  <h1 class="text-center"><?php echo $term;?></h1>
 <table class="table mt-4">
   <thead>
     <tr>
       <th scope="col">File</th>
-      <th scope="col">Download</th>
+      <th scope="col">Link</th>
     </tr>
   </thead>
   <tbody>
   <?php foreach ($response["files"] as $value) { ?>
     <tr>
       <td><?php echo $value["file"]; ?></td>
-      <td> <a href='<?php echo "./files/".$value["file"];?>' class="btn btn-warning" download>Click Here</a> </td>
+      <td> <a href='files.php?file=<?php echo urlencode($value["file"])."&term=".urlencode($term);?>' class="btn btn-warning">Click Here</a> </td>
     </tr>
   <?php } ?>
     </tbody>

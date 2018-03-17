@@ -1,5 +1,4 @@
-<?php include "adminFunctions.php";
-
+<?php 
 $file = isset($_GET["file"])? urldecode($_GET["file"]):"";
 if ($file){
   $path = __DIR__ ."/../files/" . $file;
