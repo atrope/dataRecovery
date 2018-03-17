@@ -24,7 +24,7 @@ include "../nav.php";
   for($i=0; $i<$total; $i++) {
   $tmpFilePath = $_FILES['files']['tmp_name'][$i];
   if ($tmpFilePath != ""){
-    $newFilePath = __DIR__ ."/../storage/" . $_FILES['files']['name'][$i];
+    $newFilePath = __DIR__ ."/../storage/" . str_replace(" ",",",strtolower($_FILES['files']['name'][$i]));
     if(!move_uploaded_file($tmpFilePath, $newFilePath)) $waserror=true;
   }
 }
